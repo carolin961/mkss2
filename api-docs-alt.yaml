@@ -1,0 +1,44 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+paths:
+  /robot/{id}/status:
+    get:
+      tags:
+        - robot-controller
+      operationId: getStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Robot'
+
+components:
+  schemas:
+    Robot:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        position:
+          type: object
+        energy:
+          type: integer
+          format: int64
+        status:
+          type: string
+          description: Status of the robot
