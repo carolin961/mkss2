@@ -1,9 +1,6 @@
 package com.robot.mkss2;
 
-import com.robot.mkss2.Position;
-import com.robot.mkss2.Robot;
 import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,15 +8,15 @@ import java.util.Map;
 @Service
 public class RobotService {
 
-    private Map<Integer, Robot> robots = new HashMap<>();
+    private Map<Integer, Robot> robot = new HashMap<>();
 
     public RobotService() {
-        robots.put(1, new Robot(1, new Position(0, 0), 100));
-        robots.put(2, new Robot(2, new Position(10, 10), 100));
+        robot.put(1, new Robot(1, new Position(0, 0), 100));
+        robot.put(2, new Robot(2, new Position(10, 10), 100));
     }
 
     public Robot getRobotById(Integer id) {
-        return robots.get(id);
+        return robot.get(id);
     }
 
     public void moveRobot(Integer id, String direction) {
