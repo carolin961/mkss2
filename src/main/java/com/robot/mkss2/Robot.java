@@ -103,7 +103,7 @@ public class Robot {
     }
 
     public void takeDamage() {
-        this.energy = Math.max(this.energy - 10, 0); // Damage reduces energy
+        this.energy = Math.max(this.energy - 10, 0);
     }
 
 }

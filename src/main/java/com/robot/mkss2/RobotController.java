@@ -19,16 +19,10 @@ public class RobotController {
 
     // 1. Roboter-Status abrufen
     @GetMapping("/robot/{id}/status")
-    ResponseEntity<RobotStatusResource> getStatus(@PathVariable int id) {
+    ResponseEntity<Robot> getStatus(@PathVariable int id) {
         Robot robot = robotService.getRobotById(id);
-        if (robot == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-        RobotStatusResource resource = new RobotStatusResource(robot);
-        resource.add(WebMvcLinkBuilder.linkTo(methodOn(RobotController.class).getStatus(id)).withSelfRel());
-        resource.add(WebMvcLinkBuilder.linkTo(methodOn(RobotController.class).getActions(id, 0, 5)).withRel("actions"));
-
-        return new ResponseEntity<>(resource, HttpStatus.OK);
+        return (robot == null) ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>(robot, HttpStatus.OK);
     }
 
     // 2. Roboter bewegen
@@ -72,20 +66,17 @@ public class RobotController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Link selfLink = WebMvcLinkBuilder.linkTo(
-                methodOn(RobotController.class).getActions(id, page, size)).withSelfRel();
-        resource.add(selfLink);
+        resource.add(WebMvcLinkBuilder.linkTo(
+                WebMvcLinkBuilder.methodOn(RobotController.class).getActions(id, page, size)).withSelfRel());
 
-        if (resource.getCurrentPage() > 0) {
-            Link previousLink = WebMvcLinkBuilder.linkTo(
-                    methodOn(RobotController.class).getActions(id, page - 1, size)).withRel("previous");
-            resource.add(previousLink);
+        if (resource.getPage().isHasNext()) {
+            resource.add(WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(RobotController.class).getActions(id, page + 1, size)).withRel("next"));
         }
 
-        if (resource.getCurrentPage() < resource.getTotalPages() - 1) {
-            Link nextLink = WebMvcLinkBuilder.linkTo(
-                    methodOn(RobotController.class).getActions(id, page + 1, size)).withRel("next");
-            resource.add(nextLink);
+        if (resource.getPage().isHasPrevious()) {
+            resource.add(WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(RobotController.class).getActions(id, page - 1, size)).withRel("previous"));
         }
 
         return new ResponseEntity<>(resource, HttpStatus.OK);

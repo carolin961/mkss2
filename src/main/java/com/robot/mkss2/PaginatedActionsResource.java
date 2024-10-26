@@ -4,31 +4,14 @@ import org.springframework.hateoas.RepresentationModel;
 import java.util.List;
 
 public class PaginatedActionsResource extends RepresentationModel<PaginatedActionsResource> {
-    private final List<String> actions;
-    private final int currentPage;
-    private final int totalPages;
-    private final int totalActions;
+    private final PageMetadata page;
+    private final List<ActionResource> actions;
 
-    public PaginatedActionsResource(List<String> actions, int currentPage, int totalPages, int totalActions) {
+    public PaginatedActionsResource(List<ActionResource> actions, PageMetadata page) {
         this.actions = actions;
-        this.currentPage = currentPage;
-        this.totalPages = totalPages;
-        this.totalActions = totalActions;
+        this.page = page;
     }
 
-    public List<String> getActions() {
-        return actions;
-    }
-
-    public int getCurrentPage() {
-        return currentPage;
-    }
-
-    public int getTotalPages() {
-        return totalPages;
-    }
-
-    public int getTotalActions() {
-        return totalActions;
-    }
+    public PageMetadata getPage() { return page; }
+    public List<ActionResource> getActions() { return actions; }
 }
