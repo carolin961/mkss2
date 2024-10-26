@@ -1,11 +1,15 @@
 package com.robot.mkss2;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class RobotController {
@@ -13,33 +17,18 @@ public class RobotController {
     @Autowired
     private RobotService robotService;
 
-    /*private static long sequence = 1;
-    private static long nextValue()
-    {
-        return sequence++;
-    }
-    private final Map<Long, Robot> table;
-
-    RobotController() {
-
-        table = new ConcurrentHashMap<>();
-        long id1 = nextValue();
-        table.put(id1, new Robot(id1, new Position(1,1), 3473));
-        long id2 = nextValue();
-        table.put(id2, new Robot(id2, new Position(2,2), 6956));
-        long id3 = nextValue();
-        table.put(id3, new Robot(id3, new Position(3,3), 8999));
-
-    }*/
-
     // 1. Roboter-Status abrufen
     @GetMapping("/robot/{id}/status")
-    ResponseEntity<Robot> getStatus(@PathVariable int id) {
+    ResponseEntity<RobotStatusResource> getStatus(@PathVariable int id) {
         Robot robot = robotService.getRobotById(id);
-        if(robot == null)
+        if (robot == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        else
-            return new ResponseEntity<>(robotService.getRobotById(id), HttpStatus.OK);
+
+        RobotStatusResource resource = new RobotStatusResource(robot);
+        resource.add(WebMvcLinkBuilder.linkTo(methodOn(RobotController.class).getStatus(id)).withSelfRel());
+        resource.add(WebMvcLinkBuilder.linkTo(methodOn(RobotController.class).getActions(id, 0, 5)).withRel("actions"));
+
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     // 2. Roboter bewegen
@@ -73,9 +62,33 @@ public class RobotController {
 
     // 5. Alle Aktionen des Roboters abrufen
     @GetMapping("/robot/{id}/actions")
-    ResponseEntity<String> getActions(@PathVariable int id) {
-        robotService.getRobotActions(id);
-        return new ResponseEntity(robotService.getRobotActions(id), HttpStatus.OK);
+    ResponseEntity<PaginatedActionsResource> getActions(
+            @PathVariable int id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        PaginatedActionsResource resource = robotService.getPaginatedActions(id, page, size);
+        if (resource == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Link selfLink = WebMvcLinkBuilder.linkTo(
+                methodOn(RobotController.class).getActions(id, page, size)).withSelfRel();
+        resource.add(selfLink);
+
+        if (resource.getCurrentPage() > 0) {
+            Link previousLink = WebMvcLinkBuilder.linkTo(
+                    methodOn(RobotController.class).getActions(id, page - 1, size)).withRel("previous");
+            resource.add(previousLink);
+        }
+
+        if (resource.getCurrentPage() < resource.getTotalPages() - 1) {
+            Link nextLink = WebMvcLinkBuilder.linkTo(
+                    methodOn(RobotController.class).getActions(id, page + 1, size)).withRel("next");
+            resource.add(nextLink);
+        }
+
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     // 6.Anderen Roboter angreifen

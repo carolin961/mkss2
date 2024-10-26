@@ -54,4 +54,20 @@ public class RobotService {
         Robot target = getRobotById(targetId);
         attacker.attack(target);
     }
+
+    public PaginatedActionsResource getPaginatedActions(int id, int page, int size) {
+        Robot robot = getRobotById(id);
+        if (robot == null) return null;
+
+        List<String> actions = robot.getActions();
+        int totalActions = actions.size();
+        int totalPages = (int) Math.ceil((double) totalActions / size);
+
+        int start = page * size;
+        int end = Math.min(start + size, totalActions);
+        if (start >= totalActions) return new PaginatedActionsResource(List.of(), page, totalPages, totalActions);
+
+        List<String> paginatedActions = actions.subList(start, end);
+        return new PaginatedActionsResource(paginatedActions, page, totalPages, totalActions);
+    }
 }
