@@ -81,9 +81,9 @@ public class RobotController {
 
     // 6.Anderen Roboter angreifen
     @PostMapping("/robot/{id}/attack/{targetId}")
-    ResponseEntity<String> attackRobot(@PathVariable int id, @PathVariable int targetId) {
+    ResponseEntity<Robot> attackRobot(@PathVariable int id, @PathVariable int targetId) {
         robotService.attackRobot(id, targetId);
-        return new ResponseEntity(robotService.getRobotById(id), HttpStatus.OK);
+        return new ResponseEntity<>(robotService.getRobotById(id), HttpStatus.OK);
     }
 }
 
