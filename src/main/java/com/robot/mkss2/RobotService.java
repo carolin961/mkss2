@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 @Service
 public class RobotService {
 
-    private Map<Integer, Robot> robots = new HashMap<>();
+    public Map<Integer, Robot> robots = new HashMap<>();
 
     public RobotService() {
         robots.put(1, new Robot(1, new Position(0, 0), 100));

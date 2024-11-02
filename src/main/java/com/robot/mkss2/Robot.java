@@ -88,7 +88,7 @@ public class Robot {
     }
 
     public void putDownItem(Integer itemId) {
-        inventory.remove(itemId);
+        inventory.remove(itemId.toString());
         actions.add("Put down item " + itemId);
     }
 

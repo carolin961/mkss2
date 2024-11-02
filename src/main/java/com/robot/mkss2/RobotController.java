@@ -1,15 +1,12 @@
 package com.robot.mkss2;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class RobotController {
@@ -49,9 +46,9 @@ public class RobotController {
 
     // 4. Roboter-Zustand aktualisieren
     @PatchMapping("/{id}/state")
-    ResponseEntity<String> updateState(@PathVariable int id, @RequestBody Map<String, Object> payload) {
+    ResponseEntity<Robot> updateState(@PathVariable int id, @RequestBody Map<String, Object> payload) {
         robotService.updateState(id, payload);
-        return ResponseEntity.ok("Robot state updated.");
+        return  new ResponseEntity<>(robotService.getRobotById(id), HttpStatus.OK);
     }
 
     // 5. Alle Aktionen des Roboters abrufen
