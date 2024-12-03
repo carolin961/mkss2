@@ -1,8 +1,3 @@
-
-Natürlich! Hier ist die komplette README.md im Markdown-Format:
-
-markdown
-Code kopieren
 # Robot Service
 
 The Robot Service is a RESTful web service for managing robots and orchestrating their actions. It provides endpoints to add new robots, perform tasks, and retrieve action histories.
